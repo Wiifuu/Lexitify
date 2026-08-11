@@ -1,4 +1,9 @@
-const KEY = 'lexitify:leaderboard:v1';
+const KEY_PREFIX = 'lexitify:leaderboard:v2';
+
+const DIFFICULTIES = new Set(['facil','normal','dificil']);
+function keyFor(difficulty) {
+  return `${KEY_PREFIX}:${difficulty}`;
+}
 
 function cleanName(value) {
   return String(value || '')
@@ -57,8 +62,8 @@ function parseTop(raw) {
   return rows;
 }
 
-async function getTop() {
-  const raw = await redis(['ZREVRANGE', KEY, '0', '9', 'WITHSCORES']);
+async function getTop(difficulty) {
+  const raw = await redis(['ZREVRANGE', keyFor(difficulty), '0', '9', 'WITHSCORES']);
   return parseTop(raw);
 }
 
@@ -72,9 +77,13 @@ async function handler(req, res) {
       // /api/leaderboard?health=1 permite comprobar la conexión sin exponer credenciales.
       if (req.query && String(req.query.health || '') === '1') {
         const pong = await redis(['PING']);
-        return res.status(200).json({ ok: pong === 'PONG', redis: 'connected', key: KEY });
+        return res.status(200).json({ ok: pong === 'PONG', redis: 'connected', keys: { facil:keyFor('facil'), normal:keyFor('normal'), dificil:keyFor('dificil') } });
       }
-      return res.status(200).json({ top: await getTop() });
+      const difficulty = String((req.query && req.query.difficulty) || '');
+      if (!DIFFICULTIES.has(difficulty)) {
+        return res.status(400).json({ error: 'Debes indicar difficulty=facil, normal o dificil' });
+      }
+      return res.status(200).json({ difficulty, top: await getTop(difficulty) });
     }
 
     if (req.method !== 'POST') {
@@ -105,16 +114,18 @@ async function handler(req, res) {
     }
 
     // GT conserva el mejor puntaje de ese nombre, pero permite insertar nombres nuevos.
-    await redis(['ZADD', KEY, 'GT', String(score), name]);
+    const key = keyFor(difficulty);
+    await redis(['ZADD', key, 'GT', String(score), name]);
 
     const [rankRaw, bestRaw] = await Promise.all([
-      redis(['ZREVRANK', KEY, name]),
-      redis(['ZSCORE', KEY, name])
+      redis(['ZREVRANK', key, name]),
+      redis(['ZSCORE', key, name])
     ]);
-    const top = await getTop();
+    const top = await getTop(difficulty);
 
     return res.status(200).json({
       saved: true,
+      difficulty,
       name,
       rank: rankRaw === null ? null : Number(rankRaw) + 1,
       bestScore: Number(bestRaw || score),
