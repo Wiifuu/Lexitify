@@ -386,10 +386,10 @@ function answer(x){
   }
   setTimeout(()=>{s.i++;s.lock=false;s.ready=false;s.current=null;s.i>=10?finish():question()},1100);
 }
-function msg(n){return n===10?["🏆","¡Eres increíble!","Puntuación perfecta. Las palabras no se te escapan."]:n>=7?["✨","¡Casi lo tenías!","Muy buen resultado. Una partida más y puedes superarte."]:n>=4?["📚","¡Sigue reforzando!","Vas por buen camino. Cada intento entrena tu escritura."]:["✍️","¡A estudiar!","Hoy detectaste qué puedes mejorar. Inténtalo otra vez."]}
+function msg(n){return n===10?["🏆","¡Eres increíble!","¡10 de 10! Puntuación perfecta."]:n>=7?["✨","¡Casi lo tenías, suerte para la próxima vez!",`${n}/10 respuestas correctas. Estuviste muy cerca.`]:n>=4?["📚","¡Falta reforzar esa escritura!",`${n}/10 respuestas correctas. Sigue practicando para mejorar.`]:["✍️","¡A estudiar!",`${n}/10 respuestas correctas. Practica un poco más y vuelve a intentarlo.`]}
 async function finish(){
   let d=D[s.diff],m=msg(s.ok);
-  app.innerHTML=`<section class="screen result"><div class="result-head"><div class="result-emoji">${m[0]}</div><h1>${m[1]}</h1><p>${m[2]}</p><div class="summary">${s.ok}/10 correctas · ${d.l}</div></div><div class="result-grid"><div class="score-panel"><h3>Tu puntuación</h3><div class="big-score">${s.score}</div><p>puntos obtenidos con ${s.ok} respuestas correctas.</p><p id="position"><strong>Posición:</strong> calculando…</p></div><div class="board-panel"><h3>🏅 Top 10 real</h3><div id="board" class="board-list"><div class="note">Guardando tu resultado y cargando jugadores…</div></div></div></div><div class="result-actions"><button class="secondary" id="same">Repetir nivel</button><button class="primary" id="again">Jugar de nuevo →</button></div><div id="ranknote" class="note">El ranking es compartido entre todos los jugadores.</div></section>`;
+  app.innerHTML=`<section class="screen result"><div class="result-head"><div class="result-emoji">${m[0]}</div><h1>${m[1]}</h1><p>${m[2]}</p><div class="summary">${s.ok}/10 correctas · ${d.l}</div></div><div class="result-grid"><div class="score-panel"><h3>Tu puntuación</h3><div class="big-score">${s.score}</div><p>puntos obtenidos con ${s.ok} respuestas correctas.</p><p id="position"><strong>Posición:</strong> calculando…</p></div><div class="board-panel"><h3>🏅 Top 10 ${d.l}</h3><div id="board" class="board-list"><div class="note">Guardando tu resultado y cargando jugadores…</div></div></div></div><div class="result-actions"><button class="secondary" id="same">Repetir nivel</button><button class="primary" id="again">Jugar de nuevo →</button></div><div id="ranknote" class="note">Ranking independiente para el nivel ${d.l}.</div></section>`;
   same.onclick=()=>start(s.diff);again.onclick=home;
   try{
     const res=await fetch('/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:s.name,score:s.score,correct:s.ok,difficulty:s.diff})});
@@ -397,17 +397,17 @@ async function finish(){
     if(!res.ok) throw new Error([data.error,data.detail].filter(Boolean).join(' — ')||'No se pudo guardar el ranking');
 
     // Confirmación independiente: vuelve a leer Redis después de guardar.
-    const verifyRes=await fetch('/api/leaderboard?t='+Date.now(),{cache:'no-store'});
+    const verifyRes=await fetch('/api/leaderboard?difficulty='+encodeURIComponent(s.diff)+'&t='+Date.now(),{cache:'no-store'});
     const verify=await verifyRes.json();
     if(!verifyRes.ok) throw new Error([verify.error,verify.detail].filter(Boolean).join(' — ')||'Se guardó el resultado, pero no se pudo verificar el ranking');
 
     position.innerHTML=`<strong>Posición por mejor puntaje:</strong> #${data.rank ?? '—'}`;
     board.innerHTML=verify.top.length?verify.top.map((r,i)=>`<div class="board-row ${r.name.toLowerCase()===s.name.toLowerCase()?"me":""}"><span class="rank">#${i+1}</span><span class="board-name">${esc(r.name)}</span><span class="board-score">${r.score} pts</span></div>`).join(''):`<div class="note">Aún no hay jugadores en el ranking.</div>`;
-    ranknote.textContent=data.bestScore>s.score?`Esta partida: ${s.score} pts · Tu récord guardado: ${data.bestScore} pts`:'✓ Tu puntuación quedó guardada y verificada en el ranking global.';
+    ranknote.textContent=data.bestScore>s.score?`Esta partida: ${s.score} pts · Tu récord guardado: ${data.bestScore} pts`:`✓ Tu puntuación quedó guardada en el ranking ${d.l}.`;
   }catch(err){
     console.error('Leaderboard:',err);
     position.innerHTML='<strong>Posición:</strong> no disponible';
-    board.innerHTML='<div class="note">No se pudo guardar/cargar el ranking global.</div>';
+    board.innerHTML='<div class="note">No se pudo guardar/cargar el ranking de este nivel.</div>';
     ranknote.textContent='Error: '+String(err.message||err);
   }
 }
