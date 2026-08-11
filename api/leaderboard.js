@@ -103,8 +103,8 @@ async function handler(req, res) {
     const score = Number(body.score);
     const points = { facil: 50, normal: 75, dificil: 100 }[difficulty];
 
-    if (name.length < 2) {
-      return res.status(400).json({ error: 'Nombre de usuario inválido' });
+    if (name.length < 1 || name.length > 20) {
+      return json({ error: 'Nombre de usuario inválido' }, 400);
     }
     if (!points || !Number.isInteger(correct) || correct < 0 || correct > 10) {
       return res.status(400).json({ error: 'Resultado inválido' });
