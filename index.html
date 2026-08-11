@@ -583,10 +583,10 @@ function question(){
   s.current=q;s.lock=false;s.ready=false;s.chosen=[];
 
   if(q.type==="fill"){
-    app.innerHTML=`<section class="screen game"><div class="topbar"><div class="mini-brand">Lex<i>itify</i></div><div class="player">${esc(s.name)} · ${d.l}</div></div><div class="progress-row"><div class="track"><div class="fill" style="width:${s.diff==="extremo"?Math.min(100,(s.i/150)*100):s.i*10}%"></div></div><div class="counter">${s.diff==="extremo"?"Racha "+s.score+" · "+(s.i+1)+"/150":(s.i+1)+"/10"}</div></div><div class="qcard"><div class="qmeta"><span class="badge">${d.e} ${d.l} · Completar</span><span class="score">${s.score} pts</span></div><div id="sentence" class="fill-sentence">${renderFillSentence(q)}</div><div class="fill-help">Selecciona las palabras <strong>en orden, desde el primer espacio hasta el último</strong>. ${q.options.length} opciones · ${q.answers.length} espacios.</div><div id="wordbank" class="word-bank">${q.options.map((w,i)=>`<button class="word-option" data-i="${i}">${esc(w)}</button>`).join("")}</div><div class="fill-controls"><button class="secondary" id="undo" disabled>← Borrar última</button><button class="primary" id="confirm" disabled>Comprobar →</button></div><div id="feed" class="feedback"></div></div></section>`;
-    document.querySelectorAll(".word-option").forEach(b=>b.onclick=()=>chooseWord(+b.dataset.i));
-    undo.onclick=undoWord;
-    confirm.onclick=checkFill;
+    app.innerHTML=`<section class="screen game"><div class="topbar"><div class="mini-brand">Lex<i>itify</i></div><div class="player">${esc(s.name)} · ${d.l}</div></div><div class="progress-row"><div class="track"><div class="fill" style="width:${s.diff==="extremo"?Math.min(100,(s.i/150)*100):s.i*10}%"></div></div><div class="counter">${s.diff==="extremo"?"Racha "+s.score+" · "+(s.i+1)+"/150":(s.i+1)+"/10"}</div></div><div class="qcard"><div class="qmeta"><span class="badge">${d.e} ${d.l} · Completar</span><span class="score">${s.score} pts</span></div><div id="sentence" class="fill-sentence">${renderFillSentence(q)}</div><div class="fill-help">Selecciona las palabras <strong>en orden, desde el primer espacio hasta el último</strong>. ${q.options.length} opciones · ${q.answers.length} espacios.</div><div id="wordbank" class="word-bank">${q.options.map((w,i)=>`<button class="word-option" data-i="${i}">${esc(w)}</button>`).join("")}</div><div class="fill-controls"><button type="button" class="secondary" id="undo" disabled>← Borrar última</button><button type="button" class="primary" id="checkBtn">Comprobar →</button></div><div id="feed" class="feedback"></div></div></section>`;
+    document.querySelectorAll(".word-option").forEach(b=>b.addEventListener("click",()=>chooseWord(+b.dataset.i)));
+    document.querySelector("#undo").addEventListener("click",undoWord);
+    document.querySelector("#checkBtn").addEventListener("click",checkFill);
     s.ready=true;
     return;
   }
@@ -612,8 +612,7 @@ function chooseWord(index){
   btn.disabled=true;
   btn.dataset.chosen="1";
   document.querySelector("#sentence").innerHTML=renderFillSentence(q);
-  undo.disabled=s.chosen.length===0;
-  confirm.disabled=s.chosen.length!==q.answers.length;
+  document.querySelector("#undo").disabled=s.chosen.length===0;
 }
 
 function undoWord(){
@@ -622,23 +621,41 @@ function undoWord(){
   const btn=[...document.querySelectorAll(".word-option")].find(b=>b.dataset.chosen==="1" && b.textContent===word);
   if(btn){btn.disabled=false;delete btn.dataset.chosen;}
   document.querySelector("#sentence").innerHTML=renderFillSentence(s.current);
-  undo.disabled=s.chosen.length===0;
-  confirm.disabled=s.chosen.length!==s.current.answers.length;
+  document.querySelector("#undo").disabled=s.chosen.length===0;
 }
 
 function checkFill(){
-  if(s.lock||!s.ready||s.chosen.length!==s.current.answers.length)return;
-  s.lock=true;
+  if(s.lock||!s.ready)return;
   const q=s.current;
+  const feedEl=document.querySelector("#feed");
+
+  if(!q){
+    if(feedEl){
+      feedEl.className="feedback bad";
+      feedEl.textContent="No se pudo leer este ejercicio. Intenta nuevamente.";
+    }
+    return;
+  }
+
+  if(s.chosen.length!==q.answers.length){
+    if(feedEl){
+      feedEl.className="feedback bad";
+      feedEl.textContent=`Selecciona ${q.answers.length} palabras antes de comprobar. Llevas ${s.chosen.length}.`;
+    }
+    return;
+  }
+
+  s.lock=true;
   const correct=s.chosen.every((w,i)=>w===q.answers[i]);
   document.querySelectorAll(".word-option").forEach(b=>b.disabled=true);
-  undo.disabled=true;confirm.disabled=true;
+  document.querySelector("#undo").disabled=true;
+  document.querySelector("#checkBtn").disabled=true;
 
   if(correct){
     s.ok++;
     s.score+=D[s.diff].p;
-    feed.className="feedback good";
-    feed.textContent=s.diff==="extremo"
+    feedEl.className="feedback good";
+    feedEl.textContent=s.diff==="extremo"
       ? `✓ Correcto. Racha: ${s.score}`
       : `¡Secuencia perfecta! +${D[s.diff].p} puntos`;
 
@@ -651,8 +668,8 @@ function checkFill(){
       }
     },1200);
   }else{
-    feed.className="feedback bad";
-    feed.textContent=`Secuencia correcta: ${q.answers.join(" · ")}`;
+    feedEl.className="feedback bad";
+    feedEl.textContent=`Secuencia correcta: ${q.answers.join(" · ")}`;
 
     if(s.diff==="extremo"){
       setTimeout(()=>finish(false),1800);
@@ -671,14 +688,15 @@ function answer(x){
   const q=s.current,bs=[...document.querySelectorAll(".answer")],correctIndex=q.options.findIndex(o=>o.correct);
   bs.forEach(b=>b.disabled=true);
   bs[correctIndex].classList.add("correct");
+  const feedEl=document.querySelector("#feed");
   if(x===correctIndex){
     s.ok++;s.score+=D[s.diff].p;
-    feed.className="feedback good";
-    feed.textContent=`¡Correcto! +${D[s.diff].p} puntos`;
+    feedEl.className="feedback good";
+    feedEl.textContent=`¡Correcto! +${D[s.diff].p} puntos`;
   }else{
     bs[x].classList.add("wrong");
-    feed.className="feedback bad";
-    feed.textContent=`Casi. La respuesta correcta era “${q.options[correctIndex].text}”.`;
+    feedEl.className="feedback bad";
+    feedEl.textContent=`Casi. La respuesta correcta era “${q.options[correctIndex].text}”.`;
   }
   setTimeout(()=>{
     s.i++;s.lock=false;s.ready=false;s.current=null;
