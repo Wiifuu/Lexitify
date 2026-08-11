@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#100e1d">
+<meta name="description" content="Lexitify: un juego para entrenar tu ortografía.">
+<title>Lexitify — Domina las palabras</title>
+<style>
+:root{--bg:#100e1d;--panel:rgba(29,25,52,.82);--text:#f7f5ff;--muted:#aaa4c2;--accent:#b9ff66;--violet:#8d6cff;--danger:#ff6b7a;--line:rgba(255,255,255,.10)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(circle at 50% 0,#292247 0,#151126 38%,#0f0d1b 78%);overflow-x:hidden}
+body:before,body:after{content:"";position:fixed;border-radius:50%;filter:blur(18px);pointer-events:none}body:before{width:360px;height:360px;right:-120px;top:-100px;background:#8d6cff;opacity:.25}body:after{width:420px;height:420px;left:-230px;bottom:-190px;background:#b9ff66;opacity:.09}
+button,input{font:inherit}.app{width:min(1080px,calc(100% - 32px));min-height:100vh;margin:auto;padding:34px 0;display:flex;align-items:center;justify-content:center;position:relative;z-index:1}.screen{width:100%;animation:rise .4s ease both}@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.home{text-align:center;max-width:760px}.kicker{display:inline-flex;border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:999px;padding:8px 13px;color:#d9d5e8;font-size:.84rem;font-weight:800;margin-bottom:28px}
+.logo-box{width:58px;height:58px;margin:0 auto 18px;border-radius:17px;background:var(--accent);color:#151126;display:grid;place-items:center;font-size:30px;font-weight:1000;transform:rotate(-5deg);box-shadow:0 14px 34px rgba(185,255,102,.18)}
+.brand{font-size:clamp(4rem,12vw,7.4rem);line-height:.9;letter-spacing:-.075em;margin:0;font-weight:950;background:linear-gradient(#fff,#c9c3df);-webkit-background-clip:text;color:transparent}.hero{font-size:clamp(1.05rem,2.4vw,1.32rem);color:var(--muted);max-width:610px;margin:24px auto 32px;line-height:1.55}.hero strong{color:var(--accent)}
+.primary,.secondary,.answer,.difficulty{border:0;cursor:pointer;transition:.18s}.primary{background:var(--accent);color:#151126;font-weight:900;padding:16px 25px;border-radius:15px;box-shadow:0 12px 30px rgba(185,255,102,.11)}.primary:hover{transform:translateY(-2px);filter:brightness(1.04)}.primary.large{min-width:220px;font-size:1.05rem}.secondary{background:transparent;border:1px solid var(--line);color:#fff;padding:14px 18px;border-radius:14px}.secondary:hover{background:rgba(255,255,255,.05)}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:52px;text-align:left}.feature{background:rgba(255,255,255,.045);border:1px solid var(--line);padding:18px;border-radius:18px}.feature span{display:block;color:var(--accent);font-weight:900;font-size:.77rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em}
+.card{width:min(700px,100%);background:var(--panel);border:1px solid var(--line);border-radius:26px;padding:clamp(24px,5vw,42px);backdrop-filter:blur(18px);box-shadow:0 30px 80px rgba(0,0,0,.34)}.eyebrow{color:var(--accent);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.14em}.card h1{font-size:clamp(2rem,5vw,3.1rem);letter-spacing:-.04em;margin:10px 0 8px}.card p{color:var(--muted);line-height:1.55}.field{margin:28px 0 22px}.field label{font-weight:800;display:block;margin-bottom:9px}.field input{width:100%;padding:16px 17px;border-radius:14px;border:1px solid var(--line);background:#141126;color:#fff;outline:none}.field input:focus{border-color:rgba(185,255,102,.65);box-shadow:0 0 0 4px rgba(185,255,102,.08)}.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px}
+.difficulty-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:26px}.difficulty{background:#161329;border:1px solid var(--line);border-radius:18px;padding:22px 16px;color:#fff;text-align:left}.difficulty:hover{transform:translateY(-3px);border-color:rgba(185,255,102,.42);background:#1b1731}.difficulty .emoji{font-size:1.6rem}.difficulty h3{font-size:1.05rem;margin:13px 0 5px}.difficulty p{font-size:.82rem;margin:0;line-height:1.4}.pts{color:var(--accent);font-weight:900;font-size:.78rem;margin-top:14px;display:block}
+.game{width:min(810px,100%)}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:15px}.mini-brand{font-weight:950;font-size:1.35rem;letter-spacing:-.04em}.mini-brand i{color:var(--accent);font-style:normal}.player{color:var(--muted);font-size:.88rem}.progress-row{display:flex;align-items:center;gap:13px;margin-bottom:22px}.track{flex:1;height:9px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,var(--violet),var(--accent));transition:width .3s}.counter{font-size:.82rem;color:var(--muted)}
+.qcard{background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:clamp(24px,5vw,42px);box-shadow:0 30px 80px rgba(0,0,0,.34)}.qmeta{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.badge{font-size:.73rem;font-weight:900;text-transform:uppercase;letter-spacing:.09em;padding:7px 10px;border-radius:99px;background:rgba(141,108,255,.14);color:#c5b6ff}.score{font-weight:900;color:var(--accent)}.question{font-size:clamp(1.35rem,3.4vw,2.05rem);line-height:1.28;letter-spacing:-.03em;margin:0 0 26px}.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}.answer{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid var(--line);background:#161329;color:#eeeafd;padding:15px;border-radius:15px;min-height:62px}.answer:hover:not(:disabled){border-color:#6f668f;background:#1c1832;transform:translateY(-1px)}.letter{width:31px;height:31px;flex:0 0 31px;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.06);font-weight:900;color:#c4bed9}.answer.correct{border-color:rgba(185,255,102,.7);background:rgba(185,255,102,.1)}.answer.correct .letter{background:var(--accent);color:#12101f}.answer.wrong{border-color:rgba(255,107,122,.72);background:rgba(255,107,122,.1)}.answer.wrong .letter{background:var(--danger);color:white}.feedback{min-height:28px;margin-top:18px;font-weight:800}.good{color:var(--accent)}.bad{color:#ff929d}
+.result{width:min(900px,100%)}.result-head{text-align:center;margin-bottom:28px}.result-emoji{font-size:2.6rem}.result-head h1{font-size:clamp(2.2rem,6vw,4rem);margin:8px 0;letter-spacing:-.05em}.result-head p{color:var(--muted)}.summary{display:inline-flex;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-weight:800}.result-grid{display:grid;grid-template-columns:.85fr 1.25fr;gap:16px}.score-panel,.board-panel{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:20px;padding:22px}.score-panel h3,.board-panel h3{margin:0 0 18px}.big-score{font-size:3.3rem;font-weight:950;letter-spacing:-.06em;color:var(--accent);line-height:1}.score-panel p{font-size:.9rem;color:var(--muted)}.board-list{display:grid;gap:6px}.board-row{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:8px;padding:10px 9px;border-radius:10px;font-size:.9rem}.board-row:nth-child(-n+3){background:rgba(255,255,255,.035)}.board-row.me{outline:1px solid rgba(185,255,102,.35);background:rgba(185,255,102,.06)}.rank{color:#918aa9;font-weight:900}.board-name{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.board-score{color:#cac4dd;font-weight:900}.result-actions{display:flex;justify-content:center;gap:10px;margin-top:22px}.note{font-size:.75rem;color:#817a98;text-align:center;margin-top:18px}
+@media(max-width:680px){.app{padding:22px 0 50px}.features,.difficulty-grid,.result-grid{grid-template-columns:1fr}.features{margin-top:34px}.answers{grid-template-columns:1fr}.difficulty{padding:17px}.qcard{border-radius:22px}.result-actions{flex-direction:column}.result-actions button{width:100%}.player{text-align:right}}
+</style>
+</head>
+<body><main id="app" class="app"></main>
+<script>
+const Q={
+facil:[
+["Elige la palabra correctamente escrita.", ["árbol", "arbol", "árvól", "harbol"], 0],
+["¿Cuál opción está escrita correctamente?", ["avión", "avion", "avíon", "habión"], 0],
+["Selecciona la forma ortográficamente correcta.", ["camión", "camion", "camíon", "kamión"], 0],
+["Marca la palabra que no contiene errores.", ["lápiz", "lapiz", "lapíz", "lápis"], 0],
+["¿Qué palabra está bien escrita?", ["difícil", "dificil", "difísil", "difícilh"], 0],
+["Elige la palabra correctamente escrita.", ["fácil", "facil", "fásil", "fácíl"], 0],
+["¿Cuál opción está escrita correctamente?", ["música", "musica", "músika", "musíca"], 0],
+["Selecciona la forma ortográficamente correcta.", ["pájaro", "pajaro", "pájaro", "págaro"], 0],
+["Marca la palabra que no contiene errores.", ["teléfono", "telefono", "teléfonó", "télefono"], 0],
+["¿Qué palabra está bien escrita?", ["miércoles", "miercoles", "miércoles", "miércolés"], 0],
+["Elige la palabra correctamente escrita.", ["sábado", "sabado", "sávado", "sábadó"], 0],
+["¿Cuál opción está escrita correctamente?", ["mamá", "mama", "mamáh", "máma"], 0],
+["Selecciona la forma ortográficamente correcta.", ["papá", "papa", "pápa", "papáh"], 0],
+["Marca la palabra que no contiene errores.", ["corazón", "corazon", "corasón", "corazónh"], 0],
+["¿Qué palabra está bien escrita?", ["canción", "cancion", "cansión", "cancíon"], 0],
+["Elige la palabra correctamente escrita.", ["jamón", "jamon", "hamón", "jamónh"], 0],
+["¿Cuál opción está escrita correctamente?", ["ratón", "raton", "rratón", "ratton"], 0],
+["Selecciona la forma ortográficamente correcta.", ["limón", "limon", "limóm", "límón"], 0],
+["Marca la palabra que no contiene errores.", ["sofá", "sofa", "zofá", "sófa"], 0],
+["¿Qué palabra está bien escrita?", ["café", "cafe", "caffé", "cáfe"], 0],
+["Elige la palabra correctamente escrita.", ["bebé", "bebe", "bevé", "bébe"], 0],
+["¿Cuál opción está escrita correctamente?", ["azúcar", "azucar", "asúcar", "azucár"], 0],
+["Selecciona la forma ortográficamente correcta.", ["fútbol", "futbol", "fúbol", "futból"], 0],
+["Marca la palabra que no contiene errores.", ["número", "numero", "núméro", "numéro"], 0],
+["¿Qué palabra está bien escrita?", ["médico", "medico", "médíco", "médiqo"], 0],
+["Elige la palabra correctamente escrita.", ["película", "pelicula", "pelíqula", "pelicúla"], 0],
+["¿Cuál opción está escrita correctamente?", ["máquina", "maquina", "máqina", "maquína"], 0],
+["Selecciona la forma ortográficamente correcta.", ["página", "pagina", "pájina", "págína"], 0],
+["Marca la palabra que no contiene errores.", ["rápido", "rapido", "rrápido", "rapído"], 0],
+["¿Qué palabra está bien escrita?", ["último", "ultimo", "últimó", "húltimo"], 0],
+["Elige la palabra correctamente escrita.", ["ventana", "bentana", "ventána", "venttana"], 0],
+["¿Cuál opción está escrita correctamente?", ["helado", "elado", "heladó", "jelado"], 0],
+["Selecciona la forma ortográficamente correcta.", ["queso", "qeso", "kezo", "quéso"], 0],
+["Marca la palabra que no contiene errores.", ["reloj", "relog", "relój", "rreloj"], 0],
+["¿Qué palabra está bien escrita?", ["mochila", "mochíla", "móchila", "moshila"], 0],
+["Elige la palabra correctamente escrita.", ["biblioteca", "viblioteca", "bibliotéca", "bibblioteca"], 0],
+["¿Cuál opción está escrita correctamente?", ["zapato", "sapato", "zapató", "zappato"], 0],
+["Selecciona la forma ortográficamente correcta.", ["zanahoria", "sanahoria", "zanahória", "zanahorria"], 0],
+["Marca la palabra que no contiene errores.", ["jirafa", "girafa", "jirráfa", "jirapha"], 0],
+["¿Qué palabra está bien escrita?", ["guitarra", "gitarra", "guitára", "guitarrah"], 0],
+["Elige la palabra correctamente escrita.", ["guerra", "gerra", "güerra", "guérra"], 0],
+["¿Cuál opción está escrita correctamente?", ["huevo", "uevo", "huebo", "huevó"], 0],
+["Selecciona la forma ortográficamente correcta.", ["hielo", "ielo", "hyelo", "hiélo"], 0],
+["Marca la palabra que no contiene errores.", ["hormiga", "ormiga", "hormíga", "hormigga"], 0],
+["¿Qué palabra está bien escrita?", ["lluvia", "yuvia", "llubia", "llúvia"], 0],
+["Elige la palabra correctamente escrita.", ["llave", "yave", "llabe", "lláve"], 0],
+["¿Cuál opción está escrita correctamente?", ["caballo", "cabayo", "cavallo", "cabállo"], 0],
+["Selecciona la forma ortográficamente correcta.", ["botella", "votella", "boteya", "botélla"], 0],
+["Marca la palabra que no contiene errores.", ["familia", "família", "phamilia", "famillia"], 0],
+["¿Qué palabra está bien escrita?", ["escuela", "ezcuela", "escuéla", "hescuela"], 0],
+["Elige la palabra correctamente escrita.", ["cuaderno", "quaderno", "cuadérno", "cuaderrno"], 0],
+["¿Cuál opción está escrita correctamente?", ["hermano", "ermano", "hermáno", "germano"], 0],
+["Selecciona la forma ortográficamente correcta.", ["hermana", "ermana", "hermána", "germana"], 0],
+["Marca la palabra que no contiene errores.", ["invierno", "imbierno", "inviérno", "inbierno"], 0],
+["¿Qué palabra está bien escrita?", ["verano", "berano", "veráno", "veranno"], 0],
+["Elige la palabra correctamente escrita.", ["primavera", "primabera", "primavéra", "primaverra"], 0],
+["¿Cuál opción está escrita correctamente?", ["otoño", "otono", "otóño", "hotoño"], 0],
+["Selecciona la forma ortográficamente correcta.", ["domingo", "domíngo", "dommingo", "domingo"], 0],
+["Marca la palabra que no contiene errores.", ["viernes", "biérnes", "viernes", "viérnez"], 0],
+["¿Qué palabra está bien escrita?", ["enero", "henero", "enéro", "enerro"], 0],
+["Elige la palabra correctamente escrita.", ["febrero", "fevrero", "febréro", "febrro"], 0],
+["¿Cuál opción está escrita correctamente?", ["marzo", "marso", "márzo", "marzzo"], 0],
+["Selecciona la forma ortográficamente correcta.", ["abril", "havril", "abríl", "abrril"], 0],
+["Marca la palabra que no contiene errores.", ["mayo", "mallo", "máyo", "mayo"], 0],
+["¿Qué palabra está bien escrita?", ["junio", "gúnio", "junío", "junnio"], 0],
+["Elige la palabra correctamente escrita.", ["julio", "hulio", "júlío", "jullio"], 0],
+["¿Cuál opción está escrita correctamente?", ["agosto", "hagosto", "agósto", "agostto"], 0],
+["Selecciona la forma ortográficamente correcta.", ["septiembre", "setiembre", "septiémbre", "septiembbre"], 0],
+["Marca la palabra que no contiene errores.", ["octubre", "octuv-re", "octúbre", "octtubre"], 0],
+["¿Qué palabra está bien escrita?", ["noviembre", "nobiembre", "noviémbre", "noviembbre"], 0],
+["Elige la palabra correctamente escrita.", ["diciembre", "disiembre", "diciémbre", "diciembbre"], 0],
+["¿Cuál opción está escrita correctamente?", ["cocina", "cosina", "cocína", "kocina"], 0],
+["Selecciona la forma ortográficamente correcta.", ["comida", "comída", "komida", "commida"], 0],
+["Marca la palabra que no contiene errores.", ["camisa", "camiza", "camísa", "kamisa"], 0],
+["¿Qué palabra está bien escrita?", ["pantalón", "pantalon", "pantalóm", "panttalón"], 0],
+["Elige la palabra correctamente escrita.", ["jardín", "jardin", "gardín", "jardím"], 0],
+["¿Cuál opción está escrita correctamente?", ["habitación", "abitación", "habitacion", "habitasión"], 0],
+["Selecciona la forma ortográficamente correcta.", ["computadora", "conputadora", "computadóra", "computaddora"], 0],
+["Marca la palabra que no contiene errores.", ["internet", "internét", "h internet", "interrnet"], 0],
+["¿Qué palabra está bien escrita?", ["amigo", "hamigo", "amígo", "ammigo"], 0],
+["Elige la palabra correctamente escrita.", ["amiga", "hamiga", "amíga", "ammiga"], 0],
+["¿Cuál opción está escrita correctamente?", ["abuelo", "havuelo", "abuélo", "abbuelo"], 0],
+["Selecciona la forma ortográficamente correcta.", ["abuela", "havuela", "abuéla", "abbauela"], 0],
+["Marca la palabra que no contiene errores.", ["colegio", "colejio", "colégio", "coleggio"], 0],
+["¿Qué palabra está bien escrita?", ["trabajo", "travájo", "trabájo", "travajo"], 0],
+["Elige la palabra correctamente escrita.", ["parque", "parqe", "párque", "parkue"], 0],
+["¿Cuál opción está escrita correctamente?", ["playa", "plalla", "pláya", "playya"], 0],
+["Selecciona la forma ortográficamente correcta.", ["montaña", "montana", "montáña", "monttana"], 0],
+["Marca la palabra que no contiene errores.", ["río", "rio", "rrío", "ríó"], 0],
+["¿Qué palabra está bien escrita?", ["océano", "oceano", "oséano", "océáno"], 0],
+["Elige la palabra correctamente escrita.", ["ciudad", "siudad", "ciudád", "ciudat"], 0],
+["¿Cuál opción está escrita correctamente?", ["pueblo", "puevlo", "puéblo", "puebblo"], 0],
+["Selecciona la forma ortográficamente correcta.", ["carretera", "carretera", "carretéra", "carrettera"], 0],
+["Marca la palabra que no contiene errores.", ["bicicleta", "visicleta", "bicicléta", "bicicletta"], 0],
+["¿Qué palabra está bien escrita?", ["automóvil", "automovil", "hautomóvil", "automóbil"], 0],
+["Elige la palabra correctamente escrita.", ["semáforo", "semaforo", "cemáforo", "semáforó"], 0],
+["¿Cuál opción está escrita correctamente?", ["hospital", "ospital", "hospitál", "hospittal"], 0],
+["Selecciona la forma ortográficamente correcta.", ["farmacia", "pharmacia", "farmácia", "farrmacia"], 0],
+["Marca la palabra que no contiene errores.", ["mercado", "mercádo", "merkado", "merrcado"], 0],
+["¿Qué palabra está bien escrita?", ["dinero", "dinéro", "dinnero", "dínero"], 0]
+],
+normal:[
+["Elige la palabra correctamente escrita.", ["excepción", "exepción", "eccepción", "exepcíon"], 0],
+["¿Cuál opción está escrita correctamente?", ["impresión", "impreción", "inpresión", "impresíon"], 0],
+["Selecciona la forma ortográficamente correcta.", ["construcción", "contrucción", "construción", "construcsión"], 0],
+["Marca la palabra que no contiene errores.", ["vergüenza", "verguenza", "vergüensa", "berguenza"], 0],
+["¿Qué palabra está bien escrita?", ["precisión", "presición", "presisión", "precicion"], 0],
+["Elige la palabra correctamente escrita.", ["prohibición", "proibición", "prohibisión", "prohivición"], 0],
+["¿Cuál opción está escrita correctamente?", ["adolescencia", "adolecencia", "adolesencia", "adolescensia"], 0],
+["Selecciona la forma ortográficamente correcta.", ["síntesis", "sintesis", "síntesís", "cintesis"], 0],
+["Marca la palabra que no contiene errores.", ["convincente", "convinzente", "convinsente", "convicente"], 0],
+["¿Qué palabra está bien escrita?", ["velocidad", "velosidad", "belocidad", "velocidád"], 0],
+["Elige la palabra correctamente escrita.", ["hallazgo", "hayazgo", "allazgo", "hallásgo"], 0],
+["¿Cuál opción está escrita correctamente?", ["revisado", "rebisado", "revizado", "revisadó"], 0],
+["Selecciona la forma ortográficamente correcta.", ["saludable", "salúdable", "zaludable", "saludavle"], 0],
+["Marca la palabra que no contiene errores.", ["sorprendente", "sorprendénte", "sorprendenteh", "sorprendiente"], 0],
+["¿Qué palabra está bien escrita?", ["hicieran", "hizieran", "isieran", "hisieran"], 0],
+["Elige la palabra correctamente escrita.", ["enviar", "embiar", "enbiar", "enviár"], 0],
+["¿Cuál opción está escrita correctamente?", ["decisión", "desición", "decicion", "decisíon"], 0],
+["Selecciona la forma ortográficamente correcta.", ["necesario", "nesesario", "necesário", "necesarrio"], 0],
+["Marca la palabra que no contiene errores.", ["ocasión", "ocación", "ocasíon", "hokasión"], 0],
+["¿Qué palabra está bien escrita?", ["organización", "organisación", "organizacíon", "horganización"], 0],
+["Elige la palabra correctamente escrita.", ["dirección", "direción", "dirrección", "direcsión"], 0],
+["¿Cuál opción está escrita correctamente?", ["producción", "produción", "produsión", "produccíon"], 0],
+["Selecciona la forma ortográficamente correcta.", ["educación", "edukasión", "educacíon", "heducación"], 0],
+["Marca la palabra que no contiene errores.", ["información", "informacion", "informasión", "informacíon"], 0],
+["¿Qué palabra está bien escrita?", ["situación", "situacion", "sitación", "situasión"], 0],
+["Elige la palabra correctamente escrita.", ["solución", "solucion", "solusión", "solucíon"], 0],
+["¿Cuál opción está escrita correctamente?", ["atención", "atencion", "atensíon", "atencíon"], 0],
+["Selecciona la forma ortográficamente correcta.", ["explicación", "esplicación", "explicasión", "explicacíon"], 0],
+["Marca la palabra que no contiene errores.", ["investigación", "investigacion", "inbestigación", "investigasión"], 0],
+["¿Qué palabra está bien escrita?", ["experiencia", "esperiencia", "experiéncia", "experiensia"], 0],
+["Elige la palabra correctamente escrita.", ["existencia", "ecsistencia", "existensia", "existéncia"], 0],
+["¿Cuál opción está escrita correctamente?", ["excelente", "exelente", "excelénte", "ecsélente"], 0],
+["Selecciona la forma ortográficamente correcta.", ["responsable", "responsavle", "rresponsable", "responsáble"], 0],
+["Marca la palabra que no contiene errores.", ["posibilidad", "posivilidad", "posibilidád", "pocibilidad"], 0],
+["¿Qué palabra está bien escrita?", ["probabilidad", "provabilidad", "probavilidad", "probabilidád"], 0],
+["Elige la palabra correctamente escrita.", ["habilidad", "avilidad", "habilidád", "havilidad"], 0],
+["¿Cuál opción está escrita correctamente?", ["desarrollo", "desarollo", "dezarrollo", "desarróllo"], 0],
+["Selecciona la forma ortográficamente correcta.", ["conocimiento", "conosimiento", "conocimiénto", "conosimientó"], 0],
+["Marca la palabra que no contiene errores.", ["aprendizaje", "aprendisaje", "aprendizáje", "haprendizaje"], 0],
+["¿Qué palabra está bien escrita?", ["comunicación", "comunicacion", "comunicasión", "comunicacíon"], 0],
+["Elige la palabra correctamente escrita.", ["participación", "participacion", "partisipación", "participasión"], 0],
+["¿Cuál opción está escrita correctamente?", ["colaboración", "colavoración", "colaboracion", "colaborasión"], 0],
+["Selecciona la forma ortográficamente correcta.", ["crecimiento", "cresimiento", "crecimiénto", "crecimientto"], 0],
+["Marca la palabra que no contiene errores.", ["beneficio", "veneficio", "benefísio", "benefício"], 0],
+["¿Qué palabra está bien escrita?", ["servicio", "serbicio", "servísio", "servício"], 0],
+["Elige la palabra correctamente escrita.", ["ambiente", "anbiente", "ambiènte", "hambiente"], 0],
+["¿Cuál opción está escrita correctamente?", ["también", "tambien", "tanbién", "tambíen"], 0],
+["Selecciona la forma ortográficamente correcta.", ["además", "ademas", "hademás", "adémas"], 0],
+["Marca la palabra que no contiene errores.", ["después", "despues", "dezpués", "despuéz"], 0],
+["¿Qué palabra está bien escrita?", ["quizás", "quizas", "kizás", "quisás"], 0],
+["Elige la palabra correctamente escrita.", ["jamás", "jamas", "hamás", "jamáz"], 0],
+["¿Cuál opción está escrita correctamente?", ["rápidamente", "rapidámente", "rrápidamente", "rápidaménte"], 0],
+["Selecciona la forma ortográficamente correcta.", ["fácilmente", "facilmente", "fásilmente", "fácilménte"], 0],
+["Marca la palabra que no contiene errores.", ["difícilmente", "dificilmente", "difísilmente", "difícilménte"], 0],
+["¿Qué palabra está bien escrita?", ["automáticamente", "automaticamente", "automáticamenté", "hautomáticamente"], 0],
+["Elige la palabra correctamente escrita.", ["prácticamente", "practicamente", "prácticamenté", "prágticamente"], 0],
+["¿Cuál opción está escrita correctamente?", ["económico", "economico", "heconómico", "económíco"], 0],
+["Selecciona la forma ortográficamente correcta.", ["político", "politico", "polítíco", "pholítico"], 0],
+["Marca la palabra que no contiene errores.", ["histórico", "historico", "istórico", "históríco"], 0],
+["¿Qué palabra está bien escrita?", ["científico", "cientifico", "sientífico", "científíco"], 0],
+["Elige la palabra correctamente escrita.", ["tecnología", "tecnologia", "tecnolojía", "tecnológia"], 0],
+["¿Cuál opción está escrita correctamente?", ["energía", "energia", "henergía", "energìa"], 0],
+["Selecciona la forma ortográficamente correcta.", ["geografía", "geografia", "jeografía", "geográfia"], 0],
+["Marca la palabra que no contiene errores.", ["fotografía", "fotografia", "photografía", "fotográfia"], 0],
+["¿Qué palabra está bien escrita?", ["biología", "biologia", "viología", "biológia"], 0],
+["Elige la palabra correctamente escrita.", ["matemáticas", "matematicas", "matemátikas", "matemátícas"], 0],
+["¿Cuál opción está escrita correctamente?", ["literatura", "literatúra", "litteratura", "literátura"], 0],
+["Selecciona la forma ortográficamente correcta.", ["bibliografía", "bibliografia", "vibliografía", "bibliográfia"], 0],
+["Marca la palabra que no contiene errores.", ["ortografía", "ortografia", "hortografía", "ortográfia"], 0],
+["¿Qué palabra está bien escrita?", ["gramática", "gramatica", "gramátika", "gramátíca"], 0],
+["Elige la palabra correctamente escrita.", ["puntuación", "puntuacion", "puntuasión", "puntuacíon"], 0],
+["¿Cuál opción está escrita correctamente?", ["acentuación", "acentuacion", "asentuación", "acentuasión"], 0],
+["Selecciona la forma ortográficamente correcta.", ["conclusión", "conclusion", "conclución", "conclusíon"], 0],
+["Marca la palabra que no contiene errores.", ["introducción", "introdución", "introdusión", "introduccíon"], 0],
+["¿Qué palabra está bien escrita?", ["argumentación", "argumentacion", "hargumentación", "argumentasión"], 0],
+["Elige la palabra correctamente escrita.", ["comparación", "comparacion", "conparación", "comparasión"], 0],
+["¿Cuál opción está escrita correctamente?", ["descripción", "descripcion", "descripsión", "descripcíon"], 0],
+["Selecciona la forma ortográficamente correcta.", ["narración", "narracion", "narrasión", "narracíon"], 0],
+["Marca la palabra que no contiene errores.", ["comprensión", "comprencion", "conprensión", "comprensíon"], 0],
+["¿Qué palabra está bien escrita?", ["interpretación", "interpretacion", "interpretasión", "interpretacíon"], 0],
+["Elige la palabra correctamente escrita.", ["evaluación", "evaluacion", "hevaluación", "evaluasión"], 0],
+["¿Cuál opción está escrita correctamente?", ["calificación", "calificacion", "calificasión", "calificacíon"], 0],
+["Selecciona la forma ortográficamente correcta.", ["corrección", "correción", "correcsión", "correccíon"], 0],
+["Marca la palabra que no contiene errores.", ["sugerencia", "sujerencia", "sugerensia", "sugeréncia"], 0],
+["¿Qué palabra está bien escrita?", ["preferencia", "preferensia", "preferéncia", "prepherencia"], 0],
+["Elige la palabra correctamente escrita.", ["diferencia", "diferensia", "diferéncia", "difherencia"], 0],
+["¿Cuál opción está escrita correctamente?", ["referencia", "referensia", "referéncia", "rreferencia"], 0],
+["Selecciona la forma ortográficamente correcta.", ["frecuencia", "frecuensia", "frecuéncia", "frecuecnia"], 0],
+["Marca la palabra que no contiene errores.", ["consecuencia", "consecuensia", "consecuéncia", "concecuencia"], 0],
+["¿Qué palabra está bien escrita?", ["paciencia", "pasiensia", "paciéncia", "paciensia"], 0],
+["Elige la palabra correctamente escrita.", ["conciencia", "consiensia", "conciencía", "conciensia"], 0],
+["¿Cuál opción está escrita correctamente?", ["ciencia", "siensia", "ciéncia", "ciensia"], 0],
+["Selecciona la forma ortográficamente correcta.", ["eficiencia", "efisiensia", "eficiéncia", "eficiensia"], 0],
+["Marca la palabra que no contiene errores.", ["suficiente", "sufisiente", "suficiénte", "zuficiente"], 0],
+["¿Qué palabra está bien escrita?", ["independiente", "independiênte", "independiénte", "yndependiente"], 0],
+["Elige la palabra correctamente escrita.", ["conveniente", "conbeniente", "conveniénte", "conbeniénte"], 0],
+["¿Cuál opción está escrita correctamente?", ["evidente", "hevidente", "evidénte", "ebidente"], 0],
+["Selecciona la forma ortográficamente correcta.", ["urgente", "urjente", "urgénte", "hurjente"], 0],
+["Marca la palabra que no contiene errores.", ["inteligente", "intelijente", "inteligénte", "hinteligente"], 0],
+["¿Qué palabra está bien escrita?", ["dirigente", "dirijente", "dirigénte", "dirijénte"], 0]
+],
+dificil:[
+["Elige la palabra correctamente escrita.", ["idiosincrasia", "ideosincrasia", "idiosincracia", "idiosincracía"], 0],
+["¿Cuál opción está escrita correctamente?", ["discreción", "discresión", "discrección", "discrecion"], 0],
+["Selecciona la forma ortográficamente correcta.", ["consciente", "conciente", "conscíente", "conziente"], 0],
+["Marca la palabra que no contiene errores.", ["coherente", "coerente", "coherénte", "coheriente"], 0],
+["¿Qué palabra está bien escrita?", ["exhaustivo", "exaustivo", "exahustivo", "exhaustívo"], 0],
+["Elige la palabra correctamente escrita.", ["ambigüedades", "ambiguedades", "ambigüedádes", "anbigüedades"], 0],
+["¿Cuál opción está escrita correctamente?", ["verosimilitud", "verosímilitud", "verocimilitud", "verosimilúd"], 0],
+["Selecciona la forma ortográficamente correcta.", ["injerencia", "ingerencia", "injherencia", "injerensia"], 0],
+["Marca la palabra que no contiene errores.", ["subyacer", "subllacer", "subyaser", "subyacerh"], 0],
+["¿Qué palabra está bien escrita?", ["discrepancia", "discrepansia", "discrepáncia", "discrepanzia"], 0],
+["Elige la palabra correctamente escrita.", ["circunscripción", "circunscrición", "circuncripción", "circunscripsión"], 0],
+["¿Cuál opción está escrita correctamente?", ["multidisciplinaria", "multidiciplinaria", "multidisciplínaria", "multidisiplinaria"], 0],
+["Selecciona la forma ortográficamente correcta.", ["imprescindible", "imprecindible", "inprescindible", "impresindible"], 0],
+["Marca la palabra que no contiene errores.", ["corroborar", "corrovorar", "corroborár", "coroborar"], 0],
+["¿Qué palabra está bien escrita?", ["yuxtaposición", "yustaposición", "yuxtaposision", "yuxtapocisión"], 0],
+["Elige la palabra correctamente escrita.", ["imprevisibles", "inprevisibles", "imprebisibles", "imprevisivles"], 0],
+["¿Cuál opción está escrita correctamente?", ["subyacente", "subllacente", "subyasente", "subyacenté"], 0],
+["Selecciona la forma ortográficamente correcta.", ["susceptible", "suceptible", "susceptivle", "susseptible"], 0],
+["Marca la palabra que no contiene errores.", ["exhaustividad", "exaustividad", "exhaustibidad", "exhaustividád"], 0],
+["¿Qué palabra está bien escrita?", ["incompatible", "incompativle", "incompatíble", "yncompatible"], 0],
+["Elige la palabra correctamente escrita.", ["absolver", "absorver", "absolber", "absorber"], 0],
+["¿Cuál opción está escrita correctamente?", ["adquisición", "adquisisión", "adquicición", "adquisicíon"], 0],
+["Selecciona la forma ortográficamente correcta.", ["adscripción", "adcripción", "adscripsión", "adscrición"], 0],
+["Marca la palabra que no contiene errores.", ["adyacente", "adyasente", "adllacente", "adyacenté"], 0],
+["¿Qué palabra está bien escrita?", ["aquiescencia", "aquiensencia", "aquiecencia", "aquiescensia"], 0],
+["Elige la palabra correctamente escrita.", ["beneplácito", "beneplacito", "venéplacito", "beneplácitó"], 0],
+["¿Cuál opción está escrita correctamente?", ["cognoscitivo", "cognositivo", "cognoscitibo", "cognoscitívo"], 0],
+["Selecciona la forma ortográficamente correcta.", ["concomitante", "concomittante", "concomitánte", "conkomitante"], 0],
+["Marca la palabra que no contiene errores.", ["conminar", "comminar", "conmínar", "conminár"], 0],
+["¿Qué palabra está bien escrita?", ["connivencia", "conibencia", "connivensia", "connívencia"], 0],
+["Elige la palabra correctamente escrita.", ["consustancial", "consubstancial", "consustansial", "consustanciál"], 0],
+["¿Cuál opción está escrita correctamente?", ["contingencia", "continjencia", "contingensia", "contingéncia"], 0],
+["Selecciona la forma ortográficamente correcta.", ["controversia", "controbercia", "controversía", "controbersia"], 0],
+["Marca la palabra que no contiene errores.", ["desahucio", "desaucio", "desahúsio", "deshaucio"], 0],
+["¿Qué palabra está bien escrita?", ["dilucidar", "dilusidar", "dilucidár", "diluzidar"], 0],
+["Elige la palabra correctamente escrita.", ["disuasorio", "disuazorio", "disuasório", "dizuasorio"], 0],
+["¿Cuál opción está escrita correctamente?", ["elucubración", "elucubrasión", "helucubración", "elucubracíon"], 0],
+["Selecciona la forma ortográficamente correcta.", ["encomiable", "encomiavle", "encomiáble", "hencomiable"], 0],
+["Marca la palabra que no contiene errores.", ["escisión", "escición", "esición", "escisíon"], 0],
+["¿Qué palabra está bien escrita?", ["exacerbar", "exaservar", "exacerbár", "hexacerbar"], 0],
+["Elige la palabra correctamente escrita.", ["exequible", "exequíble", "exequivle", "hexequible"], 0],
+["¿Cuál opción está escrita correctamente?", ["exhortación", "exortación", "exhortasión", "exhortacíon"], 0],
+["Selecciona la forma ortográficamente correcta.", ["fehaciente", "feaciente", "fehasiente", "fehaciénte"], 0],
+["Marca la palabra que no contiene errores.", ["heterogéneo", "heterogeneo", "eterogéneo", "heterogénio"], 0],
+["¿Qué palabra está bien escrita?", ["idiosincrásico", "ideosincrásico", "idiosincrácico", "idiosincrasico"], 0],
+["Elige la palabra correctamente escrita.", ["inextricable", "inestricable", "inextricavle", "inextricáble"], 0],
+["¿Cuál opción está escrita correctamente?", ["inhibición", "inibición", "hinhibición", "inhibisíon"], 0],
+["Selecciona la forma ortográficamente correcta.", ["inmiscuirse", "inmiscuhirse", "inmiscuírse", "inmiscuisre"], 0],
+["Marca la palabra que no contiene errores.", ["insoslayable", "insosllayable", "insoslayavle", "insoslaiable"], 0],
+["¿Qué palabra está bien escrita?", ["intersección", "interseción", "intersecsión", "interseccíon"], 0],
+["Elige la palabra correctamente escrita.", ["intrínseco", "intrinseco", "intrínsico", "intrínzeco"], 0],
+["¿Cuál opción está escrita correctamente?", ["jerarquización", "gerarquización", "jerarquisación", "jerarquizasión"], 0],
+["Selecciona la forma ortográficamente correcta.", ["jurisdicción", "jurisdición", "jurisdicsión", "juridicción"], 0],
+["Marca la palabra que no contiene errores.", ["meticulosidad", "meticulocidad", "meticulosidád", "meticullosidad"], 0],
+["¿Qué palabra está bien escrita?", ["paradigmático", "paradigmatico", "paradigmátiko", "paradigmáticó"], 0],
+["Elige la palabra correctamente escrita.", ["parsimonia", "parcimonia", "parsimonía", "parsimmonia"], 0],
+["¿Cuál opción está escrita correctamente?", ["perentorio", "perentório", "perrentorio", "perenttorio"], 0],
+["Selecciona la forma ortográficamente correcta.", ["perspicacia", "perspicácia", "perzpicacia", "perspicassia"], 0],
+["Marca la palabra que no contiene errores.", ["preeminencia", "preheminencia", "preeminensia", "preeminéncia"], 0],
+["¿Qué palabra está bien escrita?", ["preexistente", "prehexistente", "preexisténte", "preecsistente"], 0],
+["Elige la palabra correctamente escrita.", ["prescindible", "presindible", "prescindivle", "prescindíble"], 0],
+["¿Cuál opción está escrita correctamente?", ["procrastinación", "procastinación", "procrastinasión", "procrastinacíon"], 0],
+["Selecciona la forma ortográficamente correcta.", ["proscribir", "proescribir", "proscrivir", "proscribír"], 0],
+["Marca la palabra que no contiene errores.", ["reminiscencia", "reminisencia", "reminiscensia", "reminiscéncia"], 0],
+["¿Qué palabra está bien escrita?", ["resarcimiento", "rezarcimiento", "resarsimiento", "resarcimiénto"], 0],
+["Elige la palabra correctamente escrita.", ["restricción", "restrición", "restricsión", "restriccíon"], 0],
+["¿Cuál opción está escrita correctamente?", ["reticencia", "retisencia", "reticensia", "reticéncia"], 0],
+["Selecciona la forma ortográficamente correcta.", ["suscitar", "susitar", "suscitár", "zuscitar"], 0],
+["Marca la palabra que no contiene errores.", ["trascendencia", "transcendencia", "trascendensia", "trascendéncia"], 0],
+["¿Qué palabra está bien escrita?", ["ubicuidad", "hubicuidad", "ubicuídad", "ubiquidad"], 0],
+["Elige la palabra correctamente escrita.", ["vicisitud", "visicitud", "vicisítud", "vicisittud"], 0],
+["¿Cuál opción está escrita correctamente?", ["vulnerabilidad", "bulnerabilidad", "vulnerabilidád", "vulneravilidad"], 0],
+["Selecciona la forma ortográficamente correcta.", ["convergencia", "converjencia", "convergensia", "convergéncia"], 0],
+["Marca la palabra que no contiene errores.", ["divergencia", "diverjencia", "divergensia", "divergéncia"], 0],
+["¿Qué palabra está bien escrita?", ["interdisciplinario", "interdiciplinario", "interdisciplinário", "interdisiplinario"], 0],
+["Elige la palabra correctamente escrita.", ["epistemológico", "epistemologico", "epistemolójico", "epistemológicó"], 0],
+["¿Cuál opción está escrita correctamente?", ["hermenéutica", "hermeneutica", "ermenéutica", "hermenéutíca"], 0],
+["Selecciona la forma ortográficamente correcta.", ["heurística", "heuristica", "eurística", "heurístíca"], 0],
+["Marca la palabra que no contiene errores.", ["hipótesis", "hipotesis", "ipótesis", "hipótesís"], 0],
+["¿Qué palabra está bien escrita?", ["metodología", "metodologia", "metodolójía", "metodológia"], 0],
+["Elige la palabra correctamente escrita.", ["ontológico", "ontologico", "hontológico", "ontológicó"], 0],
+["¿Cuál opción está escrita correctamente?", ["semántica", "semantica", "cemántica", "semántíca"], 0],
+["Selecciona la forma ortográficamente correcta.", ["sintáctico", "sintactico", "cintáctico", "sintácticó"], 0],
+["Marca la palabra que no contiene errores.", ["pragmática", "pragmatica", "pragmátika", "pragmátíca"], 0],
+["¿Qué palabra está bien escrita?", ["prosódico", "prosodico", "prossódico", "prosódicó"], 0],
+["Elige la palabra correctamente escrita.", ["lexicográfico", "lexicografico", "lecsicográfico", "lexicográficó"], 0],
+["¿Cuál opción está escrita correctamente?", ["morfosintaxis", "morfocintaxis", "morfosíntaxis", "morphosintaxis"], 0],
+["Selecciona la forma ortográficamente correcta.", ["circunstancial", "circunstansial", "sircunstancial", "circunstanciál"], 0],
+["Marca la palabra que no contiene errores.", ["contradicción", "contradición", "contradicsión", "contradiccíon"], 0],
+["¿Qué palabra está bien escrita?", ["interlocutor", "interlocutór", "hinterlocutor", "interloqutor"], 0],
+["Elige la palabra correctamente escrita.", ["sobrentendido", "sobreentendido", "sobrentendído", "zobrentendido"], 0],
+["¿Cuál opción está escrita correctamente?", ["plausibilidad", "plauzibilidad", "plausibilidád", "plaucibilidad"], 0],
+["Selecciona la forma ortográficamente correcta.", ["imperturbable", "inperturbable", "imperturbavle", "imperturbáble"], 0],
+["Marca la palabra que no contiene errores.", ["inescrutable", "inescrutavle", "hinescrutable", "inescrutáble"], 0],
+["¿Qué palabra está bien escrita?", ["circunspecto", "circunspeto", "circumspecto", "circunspécto"], 0],
+["Elige la palabra correctamente escrita.", ["omnisciente", "omniciente", "omnisiente", "omniscienté"], 0],
+["¿Cuál opción está escrita correctamente?", ["efervescencia", "efervecencia", "efervescensia", "efervescéncia"], 0],
+["Selecciona la forma ortográficamente correcta.", ["recrudecimiento", "recrudesimiento", "recrudecimiénto", "recrudesimiento"], 0],
+["Marca la palabra que no contiene errores.", ["coadyuvar", "coayudar", "coadyubar", "coadyuvár"], 0],
+["¿Qué palabra está bien escrita?", ["constricción", "constrición", "constricsión", "constriccíon"], 0]
+]
+};
+const D={facil:{l:"Fácil",p:50,e:"🌱",d:"Tildes y palabras de uso diario"},normal:{l:"Normal",p:75,e:"⚡",d:"Homófonos, grafías y puntuación"},dificil:{l:"Difícil",p:100,e:"🧠",d:"Precisión ortográfica y uso avanzado"}};
+const app=document.querySelector("#app");let s={name:"",diff:"",qs:[],i:0,ok:0,score:0,lock:false,ready:false,current:null};
+const esc=x=>String(x).replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
+function shuffle(x){x=[...x];for(let i=x.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x}
+function extraWrong(word,used){
+  const variants=[];
+  const noAccent=word.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  if(noAccent!==word) variants.push(noAccent);
+  const swaps=[[/b/g,"v"],[/v/g,"b"],[/c/g,"s"],[/s/g,"c"],[/g/g,"j"],[/j/g,"g"],[/ll/g,"y"],[/y/g,"ll"],[/qu/g,"k"]];
+  for(const [a,b] of swaps){const v=word.replace(a,b);if(v!==word)variants.push(v)}
+  if(word.length>4){
+    variants.push(word.slice(0,2)+word[2]+word.slice(2));
+    variants.push(word.slice(0,Math.floor(word.length/2))+word.slice(Math.floor(word.length/2)+1));
+  }
+  variants.push("h"+word);
+  for(const v of variants){if(v && !used.has(v.toLowerCase()))return v}
+  let n=1,v;
+  do{v=word+"h".repeat(n++)}while(used.has(v.toLowerCase()));
+  return v;
+}
+function prepareQuestion(q){
+  const correct=q[1][q[2]];
+  const used=new Set(q[1].map(v=>String(v).toLowerCase()));
+  const options=q[1].map((text,i)=>({text,correct:i===q[2]}));
+  while(options.length<6){
+    const v=extraWrong(correct,used); used.add(v.toLowerCase()); options.push({text:v,correct:false});
+  }
+  return {prompt:q[0],options:shuffle(options)};
+}
+function home(){s={name:"",diff:"",qs:[],i:0,ok:0,score:0,lock:false};app.innerHTML=`<section class="screen home"><div class="kicker">10 retos · 3 niveles · mejora jugando</div><div class="logo-box">L</div><h1 class="brand">Lexitify</h1><p class="hero">Un juego que te ayuda a <strong>dominar la ortografía</strong>. Elige la respuesta correcta, suma puntos y escala en el ranking.</p><button class="primary large" id="play">Jugar ahora →</button><div class="features"><div class="feature"><span>01 · Practica</span><b>Ejercicios breves y claros</b></div><div class="feature"><span>02 · Progresa</span><b>Tres dificultades a tu ritmo</b></div><div class="feature"><span>03 · Compite</span><b>Supera tu mejor puntuación</b></div></div></section>`;play.onclick=nameScreen}
+function nameScreen(){app.innerHTML=`<section class="screen card"><div class="eyebrow">Antes de empezar</div><h1>¿Cómo te llamamos?</h1><p>Tu nombre aparecerá en la tabla de puntuaciones de este dispositivo.</p><form id="nf"><div class="field"><label for="u">Nombre de usuario</label><input id="u" maxlength="20" autocomplete="off" placeholder="Ej: PalabraNinja" required></div><div class="actions"><button type="button" class="secondary" id="back">Volver</button><button class="primary">Continuar →</button></div></form></section>`;back.onclick=home;nf.onsubmit=e=>{e.preventDefault();let v=u.value.trim();if(v){s.name=v.slice(0,20);difficulty()}};setTimeout(()=>u.focus(),50)}
+function difficulty(){app.innerHTML=`<section class="screen card"><div class="eyebrow">Hola, ${esc(s.name)}</div><h1>Elige tu desafío</h1><p>Cada partida toma 10 ejercicios al azar. Cuanto más difícil, más puntos ganas por acierto.</p><div class="difficulty-grid">${Object.entries(D).map(([k,d])=>`<button class="difficulty" data-k="${k}"><span class="emoji">${d.e}</span><h3>${d.l}</h3><p>${d.d}</p><span class="pts">+${d.p} pts por acierto</span></button>`).join("")}</div><div class="actions"><button class="secondary" id="back">← Cambiar nombre</button></div></section>`;document.querySelectorAll(".difficulty").forEach(b=>b.onclick=()=>start(b.dataset.k));back.onclick=nameScreen}
+function start(k){s.diff=k;s.qs=shuffle(Q[k]).slice(0,10);s.i=0;s.ok=0;s.score=0;s.lock=false;s.ready=false;s.current=null;question()}
+function question(){
+  const d=D[s.diff],q=prepareQuestion(s.qs[s.i]);s.current=q;s.lock=false;s.ready=false;
+  app.innerHTML=`<section class="screen game"><div class="topbar"><div class="mini-brand">Lex<i>itify</i></div><div class="player">${esc(s.name)} · ${d.l}</div></div><div class="progress-row"><div class="track"><div class="fill" style="width:${s.i*10}%"></div></div><div class="counter">${s.i+1}/10</div></div><div class="qcard"><div class="qmeta"><span class="badge">${d.e} ${d.l}</span><span class="score">${s.score} pts</span></div><h2 class="question">${esc(q.prompt)}</h2><div class="answers">${q.options.map((a,i)=>`<button class="answer" data-i="${i}" disabled><span class="letter">${"ABCDEF"[i]}</span><span>${esc(a.text)}</span></button>`).join("")}</div><div id="feed" class="feedback">Lee las 6 opciones…</div></div></section>`;
+  document.querySelectorAll(".answer").forEach(b=>b.onclick=()=>answer(+b.dataset.i));
+  setTimeout(()=>{if(!s.current||s.lock)return;s.ready=true;document.querySelectorAll(".answer").forEach(b=>b.disabled=false);const f=document.querySelector("#feed");if(f)f.textContent="";},650);
+}
+function answer(x){
+  if(s.lock||!s.ready)return;
+  s.lock=true;
+  const q=s.current,bs=[...document.querySelectorAll(".answer")],correctIndex=q.options.findIndex(o=>o.correct);
+  bs.forEach(b=>b.disabled=true);
+  bs[correctIndex].classList.add("correct");
+  if(x===correctIndex){
+    s.ok++;s.score+=D[s.diff].p;feed.className="feedback good";feed.textContent=`¡Correcto! +${D[s.diff].p} puntos`;
+  }else{
+    bs[x].classList.add("wrong");feed.className="feedback bad";feed.textContent=`Casi. La respuesta correcta era “${q.options[correctIndex].text}”.`;
+  }
+  setTimeout(()=>{s.i++;s.lock=false;s.ready=false;s.current=null;s.i>=10?finish():question()},1100);
+}
+function msg(n){return n===10?["🏆","¡Eres increíble!","Puntuación perfecta. Las palabras no se te escapan."]:n>=7?["✨","¡Casi lo tenías!","Muy buen resultado. Una partida más y puedes superarte."]:n>=4?["📚","¡Sigue reforzando!","Vas por buen camino. Cada intento entrena tu escritura."]:["✍️","¡A estudiar!","Hoy detectaste qué puedes mejorar. Inténtalo otra vez."]}
+async function finish(){
+  let d=D[s.diff],m=msg(s.ok);
+  app.innerHTML=`<section class="screen result"><div class="result-head"><div class="result-emoji">${m[0]}</div><h1>${m[1]}</h1><p>${m[2]}</p><div class="summary">${s.ok}/10 correctas · ${d.l}</div></div><div class="result-grid"><div class="score-panel"><h3>Tu puntuación</h3><div class="big-score">${s.score}</div><p>puntos obtenidos con ${s.ok} respuestas correctas.</p><p id="position"><strong>Posición:</strong> calculando…</p></div><div class="board-panel"><h3>🏅 Top 10 real</h3><div id="board" class="board-list"><div class="note">Guardando tu resultado y cargando jugadores…</div></div></div></div><div class="result-actions"><button class="secondary" id="same">Repetir nivel</button><button class="primary" id="again">Jugar de nuevo →</button></div><div id="ranknote" class="note">El ranking es compartido entre todos los jugadores.</div></section>`;
+  same.onclick=()=>start(s.diff);again.onclick=home;
+  try{
+    const res=await fetch('/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:s.name,score:s.score,correct:s.ok,difficulty:s.diff})});
+    const data=await res.json();
+    if(!res.ok) throw new Error([data.error,data.detail].filter(Boolean).join(' — ')||'No se pudo guardar el ranking');
+
+    // Confirmación independiente: vuelve a leer Redis después de guardar.
+    const verifyRes=await fetch('/api/leaderboard?t='+Date.now(),{cache:'no-store'});
+    const verify=await verifyRes.json();
+    if(!verifyRes.ok) throw new Error([verify.error,verify.detail].filter(Boolean).join(' — ')||'Se guardó el resultado, pero no se pudo verificar el ranking');
+
+    position.innerHTML=`<strong>Posición por mejor puntaje:</strong> #${data.rank ?? '—'}`;
+    board.innerHTML=verify.top.length?verify.top.map((r,i)=>`<div class="board-row ${r.name.toLowerCase()===s.name.toLowerCase()?"me":""}"><span class="rank">#${i+1}</span><span class="board-name">${esc(r.name)}</span><span class="board-score">${r.score} pts</span></div>`).join(''):`<div class="note">Aún no hay jugadores en el ranking.</div>`;
+    ranknote.textContent=data.bestScore>s.score?`Esta partida: ${s.score} pts · Tu récord guardado: ${data.bestScore} pts`:'✓ Tu puntuación quedó guardada y verificada en el ranking global.';
+  }catch(err){
+    console.error('Leaderboard:',err);
+    position.innerHTML='<strong>Posición:</strong> no disponible';
+    board.innerHTML='<div class="note">No se pudo guardar/cargar el ranking global.</div>';
+    ranknote.textContent='Error: '+String(err.message||err);
+  }
+}
+home();
+</script></body></html>
