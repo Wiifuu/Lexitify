@@ -55,6 +55,7 @@ button,input{font:inherit}.app{width:min(1080px,calc(100% - 32px));min-height:10
 .toast-secret{position:fixed;left:50%;bottom:42px;transform:translateX(-50%);background:#181429;border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-size:.78rem;color:#dcd5ef;z-index:30;box-shadow:0 12px 30px rgba(0,0,0,.35)}
 @media(max-width:680px){.word-bank{grid-template-columns:repeat(2,1fr);max-height:360px}.blank-slot{min-width:84px}}
 
+.extreme-word{cursor:pointer}
 </style>
 </head>
 <body><main id="app" class="app"></main>
@@ -489,7 +490,7 @@ function unlockExtreme(){
   if(old)old.remove();
   const t=document.createElement("div");
   t.className="toast-secret";
-  t.textContent="🜏 Nivel oculto desbloqueado.";
+  t.textContent="🜏 Nivel Extremo Desbloqueado.";
   document.body.appendChild(t);
   setTimeout(()=>t.remove(),2400);
   if(document.querySelector(".difficulty-grid")) difficulty();
@@ -502,8 +503,10 @@ function bindSecret(){
 
 function home(){
   s={name:"",diff:"",qs:[],i:0,ok:0,score:0,lock:false,ready:false,current:null,chosen:[]};
-  app.innerHTML=`<section class="screen home"><div class="kicker">10 retos · 3 niveles · mejora jugando</div><div class="logo-box">L</div><h1 class="brand">Lexitify</h1><p class="hero">Un juego que te ayuda a <strong>dominar la ortografía</strong>. Completa oraciones, elige con precisión, suma puntos y escala en el ranking.</p><button class="primary large" id="play">Jugar ahora →</button><div class="features"><div class="feature"><span>01 · Practica</span><b>Ejercicios breves y claros</b></div><div class="feature"><span>02 · Progresa</span><b>Tres dificultades a tu ritmo</b></div><div class="feature"><span>03 · Compite</span><b>Supera tu mejor puntuación</b></div></div></section>`;
+  app.innerHTML=`<section class="screen home"><div class="kicker">10 retos · 3 niveles · mejora jugando</div><div class="logo-box">L</div><h1 class="brand">Lexitify</h1><p class="hero">Un juego que te ayuda a <strong id="unlockExtremeWord" class="extreme-word" title="">dominar la ortografía</strong>. Completa oraciones, elige con precisión, suma puntos y escala en el ranking.</p><button class="primary large" id="play">Jugar ahora →</button><div class="features"><div class="feature"><span>01 · Practica</span><b>Ejercicios breves y claros</b></div><div class="feature"><span>02 · Progresa</span><b>Tres dificultades a tu ritmo</b></div><div class="feature"><span>03 · Compite</span><b>Supera tu mejor puntuación</b></div></div></section>`;
   play.onclick=nameScreen;
+  const secretWord=document.querySelector("#unlockExtremeWord");
+  if(secretWord) secretWord.onclick=unlockExtreme;
 }
 
 function nameScreen(){
@@ -539,7 +542,7 @@ function showExtremeRules(){
       <div class="extreme-rule"><strong>1 error = fin de la partida.</strong> No hay segunda oportunidad.</div>
       <div class="extreme-rule"><strong>+1 punto</strong> por cada oración completada correctamente.</div>
       <div class="extreme-rule">Hay un banco de <strong>150 preguntas</strong>. La partida continúa hasta que falles o completes las 150.</div>
-      <div class="extreme-rule">Cada reto tiene <strong>8 espacios</strong> y <strong>32 opciones</strong>. Solo 8 son las necesarias: exactamente el 25%.</div>
+      <div class="extreme-rule">Cada reto tiene <strong>8 espacios</strong> y <strong>32 opciones</strong>.</div>
       <div class="extreme-rule">Debes elegir las palabras <strong>en orden, del primer espacio al último</strong>, y luego confirmar.</div>
       <div class="extreme-rule">Tu <strong>racha de aciertos</strong> se guarda en un leaderboard exclusivo de Extremo.</div>
     </div>
