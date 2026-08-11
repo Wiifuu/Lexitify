@@ -35,6 +35,7 @@ button,input{font:inherit}.app{width:min(1080px,calc(100% - 32px));min-height:10
 
 @media(max-width:680px){.app{padding:22px 0 50px}.features,.difficulty-grid,.result-grid{grid-template-columns:1fr}.features{margin-top:34px}.answers{grid-template-columns:1fr}.difficulty{padding:17px}.qcard{border-radius:22px}.result-actions{flex-direction:column}.result-actions button{width:100%}.player{text-align:right}}
 .project-footer{position:static;width:100%;text-align:center;font-size:12px;color:#817a98;opacity:.8;padding:28px 12px 24px;margin:0;z-index:auto;}
+
 .fill-sentence{font-size:clamp(1.12rem,2.7vw,1.55rem);line-height:1.75;margin:0 0 22px;color:#f4f1ff}
 .blank-slot{display:inline-flex;align-items:center;justify-content:center;min-width:108px;min-height:34px;margin:0 4px;padding:2px 9px;border-bottom:2px solid rgba(157,220,245,.55);color:var(--accent);font-weight:900;vertical-align:baseline}
 .blank-slot.active{border-color:var(--accent);box-shadow:0 4px 0 rgba(157,220,245,.08)}
@@ -479,41 +480,30 @@ function buildRound(k){
   return shuffle([...fills,...spellings]);
 }
 
+let extremeUnlocked=false;
+
 function isExtremeUnlocked(){
-  return localStorage.getItem("lexitify:extreme") === "1";
+  return extremeUnlocked;
 }
 
 function toggleExtreme(){
-  const unlocked=isExtremeUnlocked();
-
-  if(unlocked){
-    localStorage.removeItem("lexitify:extreme");
-  }else{
-    localStorage.setItem("lexitify:extreme","1");
-  }
+  extremeUnlocked=!extremeUnlocked;
 
   const old=document.querySelector(".toast-secret");
-  if(old) old.remove();
+  if(old)old.remove();
 
   const t=document.createElement("div");
   t.className="toast-secret";
-
-  t.textContent=unlocked
-    ? "🜏 Nivel Extremo Bloqueado."
-    : "🜏 Nivel Extremo Desbloqueado.";
-
+  t.textContent=extremeUnlocked
+    ? "🜏 Nivel Extremo Desbloqueado."
+    : "🜏 Nivel Extremo Bloqueado.";
   document.body.appendChild(t);
 
-  setTimeout(()=>t.remove(),2400);
+  setTimeout(()=>{
+    if(t.parentNode)t.remove();
+  },2400);
 
-  if(document.querySelector(".difficulty-grid")){
-    difficulty();
-  }
-}
-
-function bindSecret(){
-  const b=document.querySelector("#secretExtreme");
-  if(b)b.onclick=unlockExtreme;
+  if(document.querySelector(".difficulty-grid")) difficulty();
 }
 
 function home(){
@@ -521,7 +511,7 @@ function home(){
   app.innerHTML=`<section class="screen home"><div class="kicker">10 retos · 3 niveles · mejora jugando</div><div class="logo-box">L</div><h1 class="brand">Lexitify</h1><p class="hero">Un juego que te ayuda a <strong id="unlockExtremeWord" class="extreme-word" title="">dominar la ortografía</strong>. Completa oraciones, elige con precisión, suma puntos y escala en el ranking.</p><button class="primary large" id="play">Jugar ahora →</button><div class="features"><div class="feature"><span>01 · Practica</span><b>Ejercicios breves y claros</b></div><div class="feature"><span>02 · Progresa</span><b>Tres dificultades a tu ritmo</b></div><div class="feature"><span>03 · Compite</span><b>Supera tu mejor puntuación</b></div></div></section>`;
   play.onclick=nameScreen;
   const secretWord=document.querySelector("#unlockExtremeWord");
-  if(secretWord) secretWord.onclick=unlockExtreme;
+  if(secretWord) secretWord.onclick=toggleExtreme;
 }
 
 function nameScreen(){
@@ -598,7 +588,7 @@ function question(){
   s.current=q;s.lock=false;s.ready=false;s.chosen=[];
 
   if(q.type==="fill"){
-    app.innerHTML=`<section class="screen game"><div class="topbar"><div class="mini-brand">Lex<i>itify</i></div><div class="player">${esc(s.name)} · ${d.l}</div></div><div class="progress-row"><div class="track"><div class="fill" style="width:${s.diff==="extremo"?Math.min(100,(s.i/150)*100):s.i*10}%"></div></div><div class="counter">${s.diff==="extremo"?"Racha "+s.score+" · "+(s.i+1)+"/150":(s.i+1)+"/10"}</div></div><div class="qcard"><div class="qmeta"><span class="badge">${d.e} ${d.l} · Completar</span><span class="score">${s.score} pts</span></div><div id="sentence" class="fill-sentence">${renderFillSentence(q)}</div><div class="fill-help">Selecciona las palabras <strong>en orden, desde el primer espacio hasta el último</strong>. ${q.options.length} opciones · ${q.answers.length} espacios.</div><div id="wordbank" class="word-bank">${q.options.map((w,i)=>`<button class="word-option" data-i="${i}">${esc(w)}</button>`).join("")}</div><div class="fill-controls"><button type="button" class="secondary" id="undo" disabled>← Borrar última</button><button type="button" class="primary" id="checkBtn">Comprobar →</button></div><div id="feed" class="feedback"></div></div></section>`;
+    app.innerHTML=`<section class="screen game"><div class="topbar"><div class="mini-brand">Lex<i>itify</i></div><div class="player">${esc(s.name)} · ${d.l}</div></div><div class="progress-row"><div class="track"><div class="fill" style="width:${s.diff==="extremo"?Math.min(100,(s.i/150)*100):s.i*10}%"></div></div><div class="counter">${s.diff==="extremo"?"Racha "+s.score+" · "+(s.i+1)+"/150":(s.i+1)+"/10"}</div></div><div class="qcard"><div class="qmeta"><span class="badge">${d.e} ${d.l} · Completar</span><span class="score">${s.score} pts</span></div><div id="sentence" class="fill-sentence">${renderFillSentence(q)}</div><div class="fill-help">Selecciona las palabras <strong>en orden, desde el primer espacio hasta el último</strong>. ${q.options.length} opciones · ${q.answers.length} espacios.</div><div id="wordbank" class="word-bank">${q.options.map((w,i)=>`<button class="word-option" data-i="${i}">${esc(w)}</button>`).join("")}</div><div class="fill-controls"><button type="button" class="secondary" id="undo" disabled>← Borrar última</button><button type="button" class="primary" id="checkBtn">Siguiente →</button></div><div id="feed" class="feedback"></div></div></section>`;
     document.querySelectorAll(".word-option").forEach(b=>b.addEventListener("click",()=>chooseWord(+b.dataset.i)));
     document.querySelector("#undo").addEventListener("click",undoWord);
     document.querySelector("#checkBtn").addEventListener("click",checkFill);
@@ -655,7 +645,7 @@ function checkFill(){
   if(s.chosen.length!==q.answers.length){
     if(feedEl){
       feedEl.className="feedback bad";
-      feedEl.textContent=`Selecciona ${q.answers.length} palabras antes de comprobar. Llevas ${s.chosen.length}.`;
+      feedEl.textContent=`Selecciona ${q.answers.length} palabras antes de continuar. Llevas ${s.chosen.length}.`;
     }
     return;
   }
@@ -687,7 +677,7 @@ function checkFill(){
     feedEl.textContent=`Secuencia correcta: ${q.answers.join(" · ")}`;
 
     if(s.diff==="extremo"){
-      setTimeout(()=>finish(false),1800);
+      finish(false);
     }else{
       setTimeout(()=>{
         s.i++;s.lock=false;s.ready=false;s.current=null;s.chosen=[];
@@ -759,9 +749,10 @@ async function finish(extremeCompleted=false){
   }
 }
 
-bindSecret();
 home();
 </script>
+
 <footer class="project-footer">Lexitify · Proyecto · Liahona El Belloto · 2026</footer>
+
 </body>
 </html>
