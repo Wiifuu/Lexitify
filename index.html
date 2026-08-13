@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#100e1d">
 <meta name="description" content="Lexitify: un juego para entrenar tu ortografía.">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
+<link rel="shortcut icon" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/logo.png">
 <title>Lexitify — Domina las palabras</title>
 <style>
 :root{--bg:#0d1720;--panel:rgba(24,42,55,.88);--text:#f4f9fc;--muted:#a9bdc9;--accent:#9DDCF5; --violet:#77BDE0; --danger:#F29BA5;--line:rgba(157,220,245,.14);}
@@ -12,9 +15,7 @@
 body:before,body:after{content:"";position:fixed;border-radius:50%;filter:blur(22px);pointer-events:none;}body:before{width:360px;height:360px;right:-120px;top:-100px;background:#8DD8F5;opacity:.20;}body:after{width:420px;height:420px;left:-230px;bottom:-190px;background:#BDEBFA;opacity:.08;}
 button,input{font:inherit}.app{width:min(1080px,calc(100% - 32px));min-height:100vh;margin:auto;padding:34px 0;display:flex;align-items:center;justify-content:center;position:relative;z-index:1}.screen{width:100%;animation:rise .4s ease both}@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .home{text-align:center;max-width:760px}.kicker{display:inline-flex;border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:999px;padding:8px 13px;color:#d9d5e8;font-size:.84rem;font-weight:800;margin-bottom:28px}
-.logo-box{width:58px;height:58px;margin:0 auto 18px;border-radius:17px;background:var(--accent);color:#151126;display:grid;place-items:center;font-size:30px;font-weight:1000;transform:rotate(-5deg);box-shadow:0 14px 34px rgba(185,255,102,.18)}
-
-.brand{font-size:clamp(3.4rem,10vw,7rem);line-height:1.08;letter-spacing:-0.035em;margin:8px 0 0;padding:0.08em 0.04em 0.12em;font-weight:950;background:linear-gradient(#fff,#c9c3df);-webkit-background-clip:text;background-clip:text;color:transparent;overflow:visible;}
+.brand-logo{display:block;width:min(420px,85%);height:auto;margin:0 auto 26px;user-select:none;-webkit-user-drag:none;}
 .hero{font-size:clamp(1.05rem,2.4vw,1.32rem);color:var(--muted);max-width:610px;margin:28px auto 34px;padding:0 12px;line-height:1.6;}
 .hero strong{color:var(--accent);}
 .primary,.secondary,.answer,.difficulty{border:0;cursor:pointer;transition:.18s}.primary{background:var(--accent);color:#151126;font-weight:900;padding:16px 25px;border-radius:15px;box-shadow:0 12px 30px rgba(185,255,102,.11)}.primary:hover{transform:translateY(-2px);filter:brightness(1.04)}.primary.large{min-width:220px;font-size:1.05rem}.secondary{background:transparent;border:1px solid var(--line);color:#fff;padding:14px 18px;border-radius:14px}.secondary:hover{background:rgba(255,255,255,.05)}
@@ -508,7 +509,9 @@ function toggleExtreme(){
 
 function home(){
   s={name:"",diff:"",qs:[],i:0,ok:0,score:0,lock:false,ready:false,current:null,chosen:[]};
-  app.innerHTML=`<section class="screen home"><div class="kicker">10 retos · 3 niveles · mejora jugando</div><div class="logo-box">L</div><h1 class="brand">Lexitify</h1><p class="hero">Un juego que te ayuda a <strong id="unlockExtremeWord" class="extreme-word" title="">dominar la ortografía</strong>. Completa oraciones, elige con precisión, suma puntos y escala en el ranking.</p><button class="primary large" id="play">Jugar ahora →</button><div class="features"><div class="feature"><span>01 · Practica</span><b>Ejercicios breves y claros</b></div><div class="feature"><span>02 · Progresa</span><b>Tres dificultades a tu ritmo</b></div><div class="feature"><span>03 · Compite</span><b>Supera tu mejor puntuación</b></div></div></section>`;
+  app.innerHTML=`<section class="screen home"><div class="kicker">10 retos · 3 niveles · mejora jugando</div>
+  <img src="assets/logo.png"class="brand-logo"alt="Lexitify">
+  <p class="hero">Un juego que te ayuda a <strong id="unlockExtremeWord" class="extreme-word" title="">dominar la ortografía</strong>. Completa oraciones, elige con precisión, suma puntos y escala en el ranking.</p><button class="primary large" id="play">Jugar ahora →</button><div class="features"><div class="feature"><span>01 · Practica</span><b>Ejercicios breves y claros</b></div><div class="feature"><span>02 · Progresa</span><b>Tres dificultades a tu ritmo</b></div><div class="feature"><span>03 · Compite</span><b>Supera tu mejor puntuación</b></div></div></section>`;
   play.onclick=nameScreen;
   const secretWord=document.querySelector("#unlockExtremeWord");
   if(secretWord) secretWord.onclick=toggleExtreme;
