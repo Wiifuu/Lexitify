@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#100e1d">
 <meta name="description" content="Lexitify: un juego para entrenar tu ortografía.">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
-<link rel="shortcut icon" href="assets/favicon.png">
-<link rel="apple-touch-icon" href="assets/logo.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="shortcut icon" href="/favicon.png">
+<link rel="apple-touch-icon" href="/logo.png">
 <title>Lexitify — Domina las palabras</title>
 <style>
 :root{--bg:#0d1720;--panel:rgba(24,42,55,.88);--text:#f4f9fc;--muted:#a9bdc9;--accent:#9DDCF5; --violet:#77BDE0; --danger:#F29BA5;--line:rgba(157,220,245,.14);}
@@ -510,7 +510,7 @@ function toggleExtreme(){
 function home(){
   s={name:"",diff:"",qs:[],i:0,ok:0,score:0,lock:false,ready:false,current:null,chosen:[]};
   app.innerHTML=`<section class="screen home"><div class="kicker">10 retos · 3 niveles · mejora jugando</div>
-  <img src="assets/logo.png"class="brand-logo"alt="Lexitify">
+  <img src="/logo.png"class="brand-logo"alt="Lexitify">
   <p class="hero">Un juego que te ayuda a <strong id="unlockExtremeWord" class="extreme-word" title="">dominar la ortografía</strong>. Completa oraciones, elige con precisión, suma puntos y escala en el ranking.</p><button class="primary large" id="play">Jugar ahora →</button><div class="features"><div class="feature"><span>01 · Practica</span><b>Ejercicios breves y claros</b></div><div class="feature"><span>02 · Progresa</span><b>Tres dificultades a tu ritmo</b></div><div class="feature"><span>03 · Compite</span><b>Supera tu mejor puntuación</b></div></div></section>`;
   play.onclick=nameScreen;
   const secretWord=document.querySelector("#unlockExtremeWord");
