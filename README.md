@@ -145,6 +145,8 @@ Lexitify/
 │
 ├── index.html
 ├── vercel.json
+├── logo.png
+├── favicon.ico
 ├── README.md
 │
 └── api/
